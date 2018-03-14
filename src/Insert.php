@@ -27,7 +27,7 @@ class Insert extends Query
      * @var array $setVal List of values
      */
     protected $setVal = array();
-    
+
     /**
      * Set the table, if any
      *
@@ -37,13 +37,13 @@ class Insert extends Query
     {
         //Argument 1 must be a string or null
         Argument::i()->test(1, 'string', 'null');
-        
+
         if (is_string($table)) {
             $this->setTable($table);
         }
     }
-    
-    
+
+
     /**
      * Returns the string version of the query
      *
@@ -55,12 +55,14 @@ class Insert extends Query
         foreach ($this->setVal as $val) {
             $multiValList[] = '('.implode(', ', $val).')';
         }
-        
+
+        $quotedKeys = array_map(function($i) {return "`$i`";}, $this->setKey);
+
         return 'INSERT INTO '
-            . $this->table . ' ('.implode(', ', $this->setKey)
+            . $this->table . ' ('.implode(', ', $quotedKeys)
             . ') VALUES ' . implode(", \n", $multiValList).';';
     }
-    
+
     /**
      * Set clause that assigns a given field name to a given value.
      * You can also use this to add multiple rows in one call
@@ -79,21 +81,21 @@ class Insert extends Query
             ->test(1, 'string')
             //Argument 2 must be scalar or null
             ->test(2, 'scalar', 'null');
-        
+
         if (!in_array($key, $this->setKey)) {
             $this->setKey[] = $key;
         }
-        
+
         if (is_null($value)) {
             $value = 'null';
         } else if (is_bool($value)) {
             $value = $value ? 1 : 0;
         }
-        
+
         $this->setVal[$index][] = $value;
         return $this;
     }
-    
+
     /**
      * Set the table name in which you want to delete from
      *
@@ -105,7 +107,7 @@ class Insert extends Query
     {
         //Argument 1 must be a string
         Argument::i()->test(1, 'string');
-        
+
         $this->table = $table;
         return $this;
     }

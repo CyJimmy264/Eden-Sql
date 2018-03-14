@@ -58,7 +58,7 @@ class Select extends Query
      * @var int|null $length Pagination range
      */
     protected $length = null;
-    
+
     /**
      * Construct: Set the columns, if any
      *
@@ -68,7 +68,7 @@ class Select extends Query
     {
         $this->select($select);
     }
-    
+
     /**
      * From clause
      *
@@ -80,11 +80,11 @@ class Select extends Query
     {
         //Argument 1 must be a string
         Argument::i()->test(1, 'string');
-        
+
         $this->from = $from;
         return $this;
     }
-    
+
     /**
      * Returns the string version of the query
      *
@@ -97,7 +97,7 @@ class Select extends Query
         $sort = empty($this->sortBy) ? '' : 'ORDER BY '.implode(', ', $this->sortBy);
         $limit = is_null($this->page) ? '' : 'LIMIT ' . $this->page .',' .$this->length;
         $group = empty($this->group) ? '' : 'GROUP BY ' . implode(', ', $this->group);
-        
+
         $query = sprintf(
             'SELECT %s FROM %s %s %s %s %s %s;',
             $this->select,
@@ -108,10 +108,10 @@ class Select extends Query
             $sort,
             $limit
         );
-        
+
         return str_replace('  ', ' ', $query);
     }
-    
+
     /**
      * Group by clause
      *
@@ -123,15 +123,15 @@ class Select extends Query
     {
          //Argument 1 must be a string or array
          Argument::i()->test(1, 'string', 'array');
-            
+
         if (is_string($group)) {
             $group = array($group);
         }
-        
+
         $this->group = $group;
         return $this;
     }
-    
+
     /**
      * Inner join clause
      *
@@ -151,10 +151,10 @@ class Select extends Query
             ->test(2, 'string')
             //Argument 3 must be a boolean
             ->test(3, 'bool');
-        
+
         return $this->join('INNER', $table, $where, $using);
     }
-    
+
     /**
      * Allows you to add joins of different types
      * to the query
@@ -178,13 +178,13 @@ class Select extends Query
             ->test(3, 'string')
             //Argument 4 must be a boolean
             ->test(4, 'bool');
-        
+
         $linkage = $using ? 'USING ('.$where.')' : ' ON ('.$where.')';
         $this->joins[] = $type.' JOIN ' . $table . ' ' . $linkage;
-        
+
         return $this;
     }
-    
+
     /**
      * Left join clause
      *
@@ -204,10 +204,10 @@ class Select extends Query
             ->test(2, 'string')
             //Argument 3 must be a boolean
             ->test(3, 'bool');
-        
+
         return $this->join('LEFT', $table, $where, $using);
     }
-    
+
     /**
      * Limit clause
      *
@@ -224,13 +224,13 @@ class Select extends Query
             ->test(1, 'numeric')
             //Argument 2 must be a number
             ->test(2, 'numeric');
-        
+
         $this->page = $page;
         $this->length = $length;
 
         return $this;
     }
-    
+
     /**
      * Outer join clause
      *
@@ -250,10 +250,10 @@ class Select extends Query
             ->test(2, 'string')
             //Argument 3 must be a boolean
             ->test(3, 'bool');
-        
+
         return $this->join('OUTER', $table, $where, $using);
     }
-    
+
     /**
      * Right join clause
      *
@@ -273,10 +273,10 @@ class Select extends Query
             ->test(2, 'string')
             //Argument 3 must be a boolean
             ->test(3, 'bool');
-        
+
         return $this->join('RIGHT', $table, $where, $using);
     }
-    
+
     /**
      * Select clause
      *
@@ -288,18 +288,20 @@ class Select extends Query
     {
         //Argument 1 must be a string or array
         Argument::i()->test(1, 'string', 'array');
-        
+
+
         //if select is an array
         if (is_array($select)) {
             //transform into a string
+            $select = array_map(function($i) {return "`$i`";}, $select);
             $select = implode(', ', $select);
         }
-        
+
         $this->select = $select;
-        
+
         return $this;
     }
-    
+
     /**
      * Order by clause
      *
@@ -316,12 +318,12 @@ class Select extends Query
             ->test(1, 'string')
             //Argument 2 must be a string
             ->test(2, 'string');
-        
+
         $this->sortBy[] = $field . ' ' . $order;
-        
+
         return $this;
     }
-    
+
     /**
      * Where clause
      *
@@ -333,13 +335,13 @@ class Select extends Query
     {
         //Argument 1 must be a string or array
         Argument::i()->test(1, 'string', 'array');
-        
+
         if (is_string($where)) {
             $where = array($where);
         }
-        
+
         $this->where = array_merge($this->where, $where);
-        
+
         return $this;
     }
 }

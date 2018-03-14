@@ -23,7 +23,7 @@ class Update extends Delete
      * @var array $set List of key/values
      */
     protected $set = array();
-    
+
     /**
      * Returns the string version of the query
      *
@@ -33,14 +33,14 @@ class Update extends Delete
     {
         $set = array();
         foreach ($this->set as $key => $value) {
-            $set[] = "{$key} = {$value}";
+            $set[] = "`{$key}` = {$value}";
         }
-        
+
         return 'UPDATE '. $this->table
         . ' SET ' . implode(', ', $set)
         . ' WHERE '. implode(' AND ', $this->where).';';
     }
-    
+
     /**
      * Set clause that assigns a given field name to a given value.
      *
@@ -58,15 +58,15 @@ class Update extends Delete
             ->test(1, 'string')
             //Argument 2 must be scalar or null
             ->test(2, 'scalar', 'null');
-        
+
         if (is_null($value)) {
             $value = 'null';
         } else if (is_bool($value)) {
             $value = $value ? 1 : 0;
         }
-        
+
         $this->set[$key] = $value;
-        
+
         return $this;
     }
 }
